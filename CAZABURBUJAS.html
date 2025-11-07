@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Caza-Burbujas 🫧</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="manifest" href="data:application/manifest+json,{
+    \"name\":\"Caza-Burbujas\",
+    \"icons\":[{\"src\":\"https://api.iconify.design/fluent-emoji/high-voltage.svg?width=192\",\"sizes\":\"192x192\"}]
+  }">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Comic Sans MS',cursive;background:#05f;color:#fff;overflow:hidden;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    #intro, #game{display:none;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:linear-gradient(#05f,#00f)}
+    #intro.active, #game.active{display:flex}
+    h1{font-size:3rem;margin:20px;text-shadow:0 0 20px #ff0}
+    .rules{background:#fff2;color:#000;padding:20px;border-radius:20px;max-width:90%;font-size:1.3rem;line-height:1.6}
+    button{background:#ff0;color:#000;font-weight:bold;padding:15px 40px;margin:20px;border:none;border-radius:50px;font-size:2rem;cursor:pointer;box-shadow:0 10px 30px #0004}
+    button:active{transform:scale(0.95)}
+    #countdown{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:15rem;z-index:30;opacity:0}
+    .bubble{position:absolute;width:70px;height:70px;background:#fff4;border-radius:50%;box-shadow:inset 0 0 30px #fff;animation:float 4s infinite}
+    @keyframes float{0%{transform:translateY(120vh) rotate(0)}100%{transform:translateY(-100px) rotate(360deg)}}
+    #score,#timer{position:fixed;top:20px;color:#ff0;font-size:3rem;z-index:10;backdrop-filter:blur(10px);padding:5px 15px;border-radius:15px}
+    #score{left:20px}#timer{right:20px}
+    #hero{bottom:30px;position:fixed;font-size:100px;filter:drop-shadow(0 0 20px #ff0)}
+  </style>
+</head>
+<body>
+
+  <!-- PANTALLA DE REGLAS -->
+  <div id="intro" class="active">
+    <h1>🫧 Caza-Burbujas 🫧</h1>
+    <div class="rules">
+      <b>¡REGLAS DEL SUPERHÉROE!</b><br><br>
+      1. Enciende la cámara 📸<br>
+      2. <b>CIERRA LA BOCA</b> todo el tiempo 👄<br>
+      3. Las burbujas suben SOLO si respiras por la nariz 👃<br>
+      4. ¡Atrapa 200 puntos y ganas un helado! 🍦
+    </div>
+    <button id="startBtn">¡JUGAR AHORA!</button>
+  </div>
+
+  <!-- JUEGO -->
+  <div id="game">
+    <div id="score">0</div>
+    <div id="timer">60s</div>
+    <div id="hero">🦸</div>
+    <div id="countdown">3</div>
+    <div id="bubbles"></div>
+  </div>
+
+  <audio id="music" loop>
+    <source src="https://cdn.glitch.global/d9b8c0f3-4e96-4e5f-9c12-9f2d9f2c6e89/epic-kids.mp3" type="audio/mp3">
+  </audio>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface@0.0.7"></script>
+  <script>
+    const intro = document.getElementById('intro');
+    const game = document.getElementById('game');
+    const startBtn = document.getElementById('startBtn');
+    const countdownEl = document.getElementById('countdown');
+    const scoreEl = document.getElementById('score');
+    const timerEl = document.getElementById('timer');
+    const bubbles = document.getElementById('bubbles');
+    const music = document.getElementById('music');
+    let score = 0, time = 60, model, video, timer, countdown;
+
+    startBtn.onclick = () => {
+      intro.classList.remove('active');
+      game.classList.add('active');
+      music.play();
+      countdown = 3;
+      countdownEl.style.opacity = 1;
+      const cd = setInterval(() => {
+        countdown--;
+        countdownEl.textContent = countdown;
+        if (countdown <= 0) {
+          clearInterval(cd);
+          countdownEl.style.opacity = 0;
+          startGame();
+        }
+      }, 1000);
+    };
+
+    async function startGame() {
+      video = document.createElement('video');
+      video.width = 320; video.height = 240;
+      video.autoplay = video.muted = video.playsInline = true;
+      video.srcObject = await navigator.mediaDevices.getUserMedia({video: true});
+      model = await blazeface.load();
+
+      timer = setInterval(() => {
+        time--; timerEl.textContent = time + 's';
+        if (time <= 0) endGame();
+      }, 1000);
+
+      setInterval(detect, 80);
+      setInterval(spawnBubble, 600);
+    }
+
+    function spawnBubble() {
+      const b = document.createElement('div');
+      b.className = 'bubble';
+      b.style.left = Math.random() * 80 + 'vw';
+      b.style.animationDuration = 2 + Math.random() * 2 + 's';
+      bubbles.appendChild(b);
+      setTimeout(() => b.remove(), 5000);
+    }
+
+    async function detect() {
+      const preds = await model.estimateFaces(video, false);
+      if (preds.length > 0) {
+        const mouthOpen = preds[0].landmarks[15][1] - preds[0].landmarks[14][1];
+        if (mouthOpen < 13) {
+          score += 2;
+          scoreEl.textContent = score;
+          document.querySelectorAll('.bubble').forEach(b => {
+            b.style.transform = 'translateY(-40px)';
+          });
+        }
+      }
+    }
+
+    function endGame() {
+      clearInterval(timer);
+      music.pause();
+      const medal = score >= 200 ? '🥇' : '🥈';
+      alert(`${medal} ¡RÉCORD! ${score} puntos\n` +
+            (score >= 200 ? '¡HELADO DESBLOQUEADO! 🍦' : '¡Casi! Juega otra vez'));
+      location.reload();
+    }
+  </script>
+</body>
+</html>

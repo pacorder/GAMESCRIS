@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RespiraFácil - Tu Entrenador de Respiración</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6ecbf5 0%, #059ee3 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        h1 {
+            color: #059ee3;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .level-option {
+            background: #f0f9ff;
+            border: 2px solid #b3e5fc;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 12px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .level-option:hover {
+            background: #e1f5fe;
+            transform: translateY(-3px);
+        }
+
+        .level-option.selected {
+            background: #b3e5fc;
+            border-color: #059ee3;
+        }
+
+        .level-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #0277bd;
+        }
+
+        .level-desc {
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        .custom-inputs {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .custom-input {
+            width: 48%;
+            text-align: center;
+        }
+
+        .custom-input label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .custom-input input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #b3e5fc;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .btn {
+            background: #059ee3;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(5, 158, 227, 0.3);
+        }
+
+        .btn:hover {
+            background: #0277bd;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(5, 158, 227, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-secondary {
+            background: #ff9800;
+            box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: #f57c00;
+            box-shadow: 0 6px 12px rgba(255, 152, 0, 0.4);
+        }
+
+        .animation-container {
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6ecbf5 0%, #059ee3 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(5, 158, 227, 0.4);
+            transition: all 1s ease;
+        }
+
+        .inhale {
+            animation: pulseIn 3s infinite alternate;
+        }
+
+        .exhale {
+            animation: pulseOut 4s infinite alternate;
+        }
+
+        @keyframes pulseIn {
+            0% {
+                transform: scale(0.8);
+                background: linear-gradient(135deg, #6ecbf5 0%, #059ee3 100%);
+            }
+            100% {
+                transform: scale(1.2);
+                background: linear-gradient(135deg, #4fc3f7 0%, #0288d1 100%);
+            }
+        }
+
+        @keyframes pulseOut {
+            0% {
+                transform: scale(1.2);
+                background: linear-gradient(135deg, #4fc3f7 0%, #0288d1 100%);
+            }
+            100% {
+                transform: scale(0.8);
+                background: linear-gradient(135deg, #6ecbf5 0%, #059ee3 100%);
+            }
+        }
+
+        .status-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 15px 0;
+            transition: color 0.5s ease;
+        }
+
+        .inhale-text {
+            color: #4caf50;
+        }
+
+        .exhale-text {
+            color: #ff5722;
+        }
+
+        .counter {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, #4caf50, #ff5722);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .session-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .instructions {
+            background: #e1f5fe;
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 0.95rem;
+            color: #0277bd;
+            border-left: 4px solid #4fc3f7;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: white;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .circle {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>RespiraFácil</h1>
+        <p class="subtitle">Tu entrenador de respiración nasal</p>
+        
+        <!-- Pantalla de selección de nivel -->
+        <div id="level-screen" class="screen active">
+            <h2>Elige tu nivel</h2>
+            <div class="instructions">
+                Recuerda: Inspira y espira siempre por la nariz, con la boca cerrada.
+            </div>
+            
+            <div class="level-option" data-level="beginner" data-inhale="3" data-exhale="4">
+                <div class="level-title">Principiante</div>
+                <div class="level-desc">Inhala: 3 segundos | Exhala: 4 segundos</div>
+            </div>
+            
+            <div class="level-option" data-level="intermediate" data-inhale="4" data-exhale="6">
+                <div class="level-title">Intermedio</div>
+                <div class="level-desc">Inhala: 4 segundos | Exhala: 6 segundos</div>
+            </div>
+            
+            <div class="level-option" data-level="advanced" data-inhale="5" data-exhale="8">
+                <div class="level-title">Avanzado</div>
+                <div class="level-desc">Inhala: 5 segundos | Exhala: 8 segundos</div>
+            </div>
+            
+            <div class="level-option" id="custom-level">
+                <div class="level-title">Personalizado</div>
+                <div class="level-desc">Configura tus propios tiempos</div>
+                <div class="custom-inputs">
+                    <div class="custom-input">
+                        <label for="custom-inhale">Inhalación (seg)</label>
+                        <input type="number" id="custom-inhale" min="2" max="10" value="4">
+                    </div>
+                    <div class="custom-input">
+                        <label for="custom-exhale">Exhalación (seg)</label>
+                        <input type="number" id="custom-exhale" min="2" max="15" value="6">
+                    </div>
+                </div>
+            </div>
+            
+            <button id="start-btn" class="btn">Comenzar Ejercicio</button>
+        </div>
+        
+        <!-- Pantalla de ejercicio -->
+        <div id="exercise-screen" class="screen">
+            <div class="session-info">
+                <div id="current-level">Nivel: Principiante</div>
+                <div id="timer">00:00</div>
+            </div>
+            
+            <div class="animation-container">
+                <div id="breathing-circle" class="circle">
+                    <span id="counter">3</span>
+                </div>
+            </div>
+            
+            <div id="status-text" class="status-text inhale-text">INHALA</div>
+            
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            
+            <div class="controls">
+                <button id="pause-btn" class="btn btn-secondary">Pausar</button>
+                <button id="reset-btn" class="btn">Reiniciar</button>
+            </div>
+            
+            <button id="back-btn" class="btn">Volver al Menú</button>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Recuerda respirar por la nariz para mejorar tu postura y salud</p>
+    </div>
+
+    <script>
+        // Elementos DOM
+        const levelScreen = document.getElementById('level-screen');
+        const exerciseScreen = document.getElementById('exercise-screen');
+        const levelOptions = document.querySelectorAll('.level-option');
+        const startBtn = document.getElementById('start-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const backBtn = document.getElementById('back-btn');
+        const breathingCircle = document.getElementById('breathing-circle');
+        const statusText = document.getElementById('status-text');
+        const counter = document.getElementById('counter');
+        const progressBar = document.getElementById('progress-bar');
+        const currentLevel = document.getElementById('current-level');
+        const timer = document.getElementById('timer');
+        const customInhale = document.getElementById('custom-inhale');
+        const customExhale = document.getElementById('custom-exhale');
+
+        // Variables de estado
+        let selectedLevel = 'beginner';
+        let inhaleTime = 3;
+        let exhaleTime = 4;
+        let isInhaling = true;
+        let isPaused = false;
+        let currentTime = 0;
+        let timerInterval;
+        let breathingInterval;
+        let remainingTime = 0;
+
+        // Configurar eventos para selección de nivel
+        levelOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                levelOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                if (this.id !== 'custom-level') {
+                    selectedLevel = this.dataset.level;
+                    inhaleTime = parseInt(this.dataset.inhale);
+                    exhaleTime = parseInt(this.dataset.exhale);
+                }
+            });
+        });
+
+        // Evento para el botón de comenzar
+        startBtn.addEventListener('click', function() {
+            const customOption = document.getElementById('custom-level');
+            
+            if (customOption.classList.contains('selected')) {
+                inhaleTime = parseInt(customInhale.value) || 4;
+                exhaleTime = parseInt(customExhale.value) || 6;
+                selectedLevel = 'personalizado';
+            }
+            
+            // Validar que los tiempos sean válidos
+            if (inhaleTime < 2 || exhaleTime < 2) {
+                alert('Los tiempos deben ser de al menos 2 segundos');
+                return;
+            }
+            
+            currentLevel.textContent = `Nivel: ${getLevelName(selectedLevel)}`;
+            switchScreen(levelScreen, exerciseScreen);
+            startBreathingExercise();
+        });
+
+        // Eventos para los botones de control
+        pauseBtn.addEventListener('click', togglePause);
+        resetBtn.addEventListener('click', resetExercise);
+        backBtn.addEventListener('click', function() {
+            resetExercise();
+            switchScreen(exerciseScreen, levelScreen);
+        });
+
+        // Funciones
+        function switchScreen(hideScreen, showScreen) {
+            hideScreen.classList.remove('active');
+            showScreen.classList.add('active');
+        }
+
+        function getLevelName(level) {
+            const levels = {
+                'beginner': 'Principiante',
+                'intermediate': 'Intermedio',
+                'advanced': 'Avanzado',
+                'personalizado': 'Personalizado'
+            };
+            return levels[level] || 'Personalizado';
+        }
+
+        function startBreathingExercise() {
+            isPaused = false;
+            pauseBtn.textContent = 'Pausar';
+            currentTime = 0;
+            updateTimer();
+            
+            // Iniciar temporizador general
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+            
+            // Iniciar ciclo de respiración
+            startBreathingCycle();
+        }
+
+        function startBreathingCycle() {
+            isInhaling = true;
+            remainingTime = inhaleTime;
+            updateBreathingDisplay();
+            
+            // Iniciar intervalo de respiración
+            clearInterval(breathingInterval);
+            breathingInterval = setInterval(updateBreathing, 1000);
+        }
+
+        function updateBreathing() {
+            remainingTime--;
+            
+            if (remainingTime <= 0) {
+                // Cambiar entre inhalación y exhalación
+                isInhaling = !isInhaling;
+                remainingTime = isInhaling ? inhaleTime : exhaleTime;
+            }
+            
+            updateBreathingDisplay();
+        }
+
+        function updateBreathingDisplay() {
+            // Actualizar contador
+            counter.textContent = remainingTime;
+            
+            // Actualizar texto y color
+            if (isInhaling) {
+                statusText.textContent = 'INHALA';
+                statusText.className = 'status-text inhale-text';
+                breathingCircle.style.animation = 'pulseIn ' + inhaleTime + 's infinite alternate';
+            } else {
+                statusText.textContent = 'EXHALA';
+                statusText.className = 'status-text exhale-text';
+                breathingCircle.style.animation = 'pulseOut ' + exhaleTime + 's infinite alternate';
+            }
+            
+            // Actualizar barra de progreso
+            const totalTime = isInhaling ? inhaleTime : exhaleTime;
+            const progress = ((totalTime - remainingTime) / totalTime) * 100;
+            progressBar.style.width = progress + '%';
+        }
+
+        function updateTimer() {
+            if (!isPaused) {
+                currentTime++;
+                const minutes = Math.floor(currentTime / 60);
+                const seconds = currentTime % 60;
+                timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            pauseBtn.textContent = isPaused ? 'Reanudar' : 'Pausar';
+            
+            if (isPaused) {
+                clearInterval(breathingInterval);
+                breathingCircle.style.animationPlayState = 'paused';
+            } else {
+                breathingInterval = setInterval(updateBreathing, 1000);
+                breathingCircle.style.animationPlayState = 'running';
+            }
+        }
+
+        function resetExercise() {
+            clearInterval(timerInterval);
+            clearInterval(breathingInterval);
+            isPaused = false;
+            pauseBtn.textContent = 'Pausar';
+            currentTime = 0;
+            timer.textContent = '00:00';
+            progressBar.style.width = '0%';
+        }
+
+        // Seleccionar nivel principiante por defecto
+        document.querySelector('.level-option[data-level="beginner"]').classList.add('selected');
+    </script>
+</body>
+</html>
