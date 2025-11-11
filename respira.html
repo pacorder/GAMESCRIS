@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Respira conmigo - Ejercicio de Respiración</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #c9d1d9;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 300;
+            letter-spacing: 2px;
+            color: #58a6ff;
+            text-transform: uppercase;
+        }
+
+        .breathing-container {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .breathing-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0d7377 0%, #14a76c 100%);
+            box-shadow: 0 0 30px rgba(20, 167, 108, 0.6), inset 0 0 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .breathing-circle::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(13, 115, 119, 0.8) 0%, rgba(20, 167, 108, 0.8) 100%);
+            filter: blur(15px);
+            opacity: 0.7;
+            z-index: -1;
+        }
+
+        .breathing-circle.inhale {
+            animation: inhale 4s ease-in-out forwards;
+        }
+
+        .breathing-circle.hold1 {
+            animation: hold-large 4s ease-in-out forwards;
+        }
+
+        .breathing-circle.exhale {
+            animation: exhale 4s ease-in-out forwards;
+        }
+
+        .breathing-circle.hold2 {
+            animation: hold-small 4s ease-in-out forwards;
+        }
+
+        @keyframes inhale {
+            0% {
+                width: 120px;
+                height: 120px;
+                box-shadow: 0 0 20px rgba(20, 167, 108, 0.4);
+            }
+            100% {
+                width: 280px;
+                height: 280px;
+                box-shadow: 0 0 50px rgba(20, 167, 108, 0.8), inset 0 0 30px rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        @keyframes hold-large {
+            0%, 100% {
+                width: 280px;
+                height: 280px;
+                box-shadow: 0 0 50px rgba(20, 167, 108, 0.8), inset 0 0 30px rgba(0, 0, 0, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 70px rgba(88, 166, 255, 0.9), inset 0 0 30px rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        @keyframes exhale {
+            0% {
+                width: 280px;
+                height: 280px;
+                box-shadow: 0 0 50px rgba(20, 167, 108, 0.8), inset 0 0 30px rgba(0, 0, 0, 0.2);
+            }
+            100% {
+                width: 120px;
+                height: 120px;
+                box-shadow: 0 0 20px rgba(20, 167, 108, 0.4);
+            }
+        }
+
+        @keyframes hold-small {
+            0%, 100% {
+                width: 120px;
+                height: 120px;
+                box-shadow: 0 0 20px rgba(20, 167, 108, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(255, 171, 112, 0.6), inset 0 0 20px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        .outer-ring {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 2px solid rgba(88, 166, 255, 0.2);
+            z-index: 1;
+            box-shadow: 0 0 20px rgba(88, 166, 255, 0.1), inset 0 0 20px rgba(88, 166, 255, 0.05);
+        }
+
+        .phase-text {
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 20px;
+            min-height: 40px;
+            color: #58a6ff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .timer-display {
+            font-size: 2rem;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px 30px;
+            background: rgba(22, 27, 34, 0.8);
+            border-radius: 10px;
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            min-width: 200px;
+            font-family: 'Courier New', monospace;
+            color: #ffab70;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #0d7377 0%, #14a76c 100%);
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(20, 167, 108, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(20, 167, 108, 0.4);
+            background: linear-gradient(135deg, #14a76c 0%, #0d7377 100%);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .settings {
+            margin-top: 30px;
+            background: rgba(22, 27, 34, 0.9);
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid rgba(88, 166, 255, 0.2);
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .setting-item label {
+            color: #8b949e;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .setting-item input {
+            width: 70px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            background: rgba(13, 17, 23, 0.8);
+            color: #c9d1d9;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+        }
+
+        .setting-item input:focus {
+            outline: none;
+            border-color: #58a6ff;
+            box-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
+        }
+
+        .timer-options {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-option {
+            padding: 10px 25px;
+            background: rgba(22, 27, 34, 0.8);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .timer-option:hover {
+            background: rgba(88, 166, 255, 0.1);
+            border-color: #58a6ff;
+        }
+
+        .timer-option.active {
+            background: linear-gradient(135deg, #0d7377 0%, #14a76c 100%);
+            border-color: #14a76c;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(20, 167, 108, 0.3);
+        }
+
+        .instructions {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            max-width: 500px;
+            line-height: 1.6;
+            color: #8b949e;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(22, 27, 34, 0.8);
+            border-radius: 3px;
+            margin-top: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(88, 166, 255, 0.2);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0d7377, #14a76c, #58a6ff);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 1s linear;
+            box-shadow: 0 0 10px rgba(20, 167, 108, 0.5);
+        }
+
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(88, 166, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(88, 166, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .corner-decoration {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border: 2px solid rgba(88, 166, 255, 0.3);
+        }
+
+        .corner-decoration.top-left {
+            top: 20px;
+            left: 20px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-decoration.top-right {
+            top: 20px;
+            right: 20px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .corner-decoration.bottom-left {
+            bottom: 20px;
+            left: 20px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .corner-decoration.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .sound-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(22, 27, 34, 0.8);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #58a6ff;
+            font-size: 1.2rem;
+        }
+
+        .sound-toggle:hover {
+            background: rgba(88, 166, 255, 0.1);
+            border-color: #58a6ff;
+        }
+
+        .sound-toggle.muted {
+            color: #8b949e;
+            opacity: 0.6;
+        }
+
+        /* Footer Styles */
+        footer {
+            background: rgba(13, 17, 23, 0.95);
+            border-top: 1px solid rgba(88, 166, 255, 0.2);
+            padding: 30px 20px 20px;
+            margin-top: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #58a6ff, transparent);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .footer-link {
+            color: #8b949e;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .footer-link:hover {
+            color: #58a6ff;
+        }
+
+        .footer-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #58a6ff;
+            transition: width 0.3s ease;
+        }
+
+        .footer-link:hover::after {
+            width: 100%;
+        }
+
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            text-align: center;
+        }
+
+        .footer-brand {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            color: #58a6ff;
+            text-transform: uppercase;
+        }
+
+        .footer-copyright {
+            color: #6e7681;
+            font-size: 0.85rem;
+        }
+
+        .footer-version {
+            color: #8b949e;
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+            background: rgba(88, 166, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        @media (max-height: 800px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 15px;
+            }
+            
+            .breathing-container {
+                width: 280px;
+                height: 280px;
+                margin: 20px 0;
+            }
+            
+            .outer-ring {
+                width: 260px;
+                height: 260px;
+            }
+            
+            @keyframes inhale {
+                0% {
+                    width: 100px;
+                    height: 100px;
+                }
+                100% {
+                    width: 240px;
+                    height: 240px;
+                }
+            }
+            
+            @keyframes hold-large {
+                0%, 100% {
+                    width: 240px;
+                    height: 240px;
+                }
+            }
+            
+            @keyframes exhale {
+                0% {
+                    width: 240px;
+                    height: 240px;
+                }
+                100% {
+                    width: 100px;
+                    height: 100px;
+                }
+            }
+            
+            @keyframes hold-small {
+                0%, 100% {
+                    width: 100px;
+                    height: 100px;
+                }
+            }
+            
+            .breathing-circle {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .phase-text {
+                font-size: 1.5rem;
+                margin-top: 15px;
+            }
+            
+            .timer-display {
+                font-size: 1.5rem;
+                margin: 15px 0;
+                padding: 10px 20px;
+            }
+            
+            .settings {
+                margin-top: 20px;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            footer {
+                padding: 20px 15px 15px;
+            }
+            
+            .footer-links {
+                gap: 20px;
+            }
+            
+            .footer-link {
+                font-size: 0.85rem;
+            }
+            
+            .footer-brand {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    
+    <div class="corner-decoration top-left"></div>
+    <div class="corner-decoration top-right"></div>
+    <div class="corner-decoration bottom-left"></div>
+    <div class="corner-decoration bottom-right"></div>
+    
+    <div class="sound-toggle" id="soundToggle" onclick="toggleSound()">
+        <span id="soundIcon">🔊</span>
+    </div>
+    
+    <main>
+        <div class="container">
+            <h1>Respira Conmigo</h1>
+            
+            <p class="instructions">
+                Sigue el círculo para practicar tu respiración. Inhala cuando crece, mantén cuando se queda quieto y exhala cuando se encoge.
+            </p>
+            
+            <div class="timer-options">
+                <div class="timer-option" data-time="1">1 Min</div>
+                <div class="timer-option active" data-time="4">4 Min</div>
+                <div class="timer-option" data-time="6">6 Min</div>
+            </div>
+            
+            <div class="timer-display" id="timerDisplay">4:00</div>
+            
+            <div class="breathing-container">
+                <div class="outer-ring"></div>
+                <div class="breathing-circle" id="breathingCircle"></div>
+            </div>
+            
+            <div class="phase-text" id="phaseText">Presiona "Iniciar" para comenzar</div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div class="controls">
+                <button id="startBtn" onclick="startBreathing()">Iniciar</button>
+                <button id="stopBtn" onclick="stopBreathing()" disabled>Detener</button>
+            </div>
+            
+            <div class="settings">
+                <div class="setting-item">
+                    <label for="inhaleTime">Inhalar (seg):</label>
+                    <input type="number" id="inhaleTime" value="4" min="1" max="10">
+                </div>
+                <div class="setting-item">
+                    <label for="hold1Time">Mantener (seg):</label>
+                    <input type="number" id="hold1Time" value="4" min="1" max="10">
+                </div>
+                <div class="setting-item">
+                    <label for="exhaleTime">Exhalar (seg):</label>
+                    <input type="number" id="exhaleTime" value="4" min="1" max="10">
+                </div>
+                <div class="setting-item">
+                    <label for="hold2Time">Mantener (seg):</label>
+                    <input type="number" id="hold2Time" value="4" min="1" max="10">
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">Respira Conmigo</div>
+            <div class="footer-divider"></div>
+            <div class="footer-links">
+                <a href="#" class="footer-link" onclick="showInfo('about'); return false;">Acerca de</a>
+                <a href="#" class="footer-link" onclick="showInfo('guide'); return false;">Guía de Uso</a>
+                <a href="#" class="footer-link" onclick="showInfo('benefits'); return false;">Beneficios</a>
+                <a href="#" class="footer-link" onclick="showInfo('privacy'); return false;">Privacidad</a>
+            </div>
+            <div class="footer-info">
+                <div class="footer-version">v1.0.0</div>
+                <div class="footer-copyright">© 2024 Respira Conmigo. Todos los derechos reservados.</div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let breathingInterval;
+        let timerInterval;
+        let isRunning = false;
+        let selectedDuration = 4;
+        let totalSeconds;
+        let currentSeconds;
+        let soundEnabled = true;
+        let audioContext;
+        
+        const breathingCircle = document.getElementById('breathingCircle');
+        const phaseText = document.getElementById('phaseText');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const progressFill = document.getElementById('progressFill');
+        const timerOptions = document.querySelectorAll('.timer-option');
+        const soundToggle = document.getElementById('soundToggle');
+        const soundIcon = document.getElementById('soundIcon');
+        
+        // Initialize audio context
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+        
+        // Play sound effect
+        function playSound(frequency, duration) {
+            if (!soundEnabled || !audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.05);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+        
+        // Toggle sound on/off
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            soundToggle.classList.toggle('muted');
+            soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
+            
+            if (soundEnabled) {
+                initAudio();
+                playSound(600, 0.1); // Test sound
+            }
+        }
+        
+        // Show information modal
+        function showInfo(type) {
+            const messages = {
+                about: "Respira Conmigo es una aplicación diseñada para ayudar a niños y adultos a practicar técnicas de respiración de manera visual y guiada.",
+                guide: "1. Selecciona la duración del ejercicio\n2. Ajusta los tiempos de cada fase\n3. Presiona 'Iniciar'\n4. Sigue el círculo con tu respiración",
+                benefits: "La respiración consciente ayuda a:\n• Reducir el estrés y la ansiedad\n• Mejorar la concentración\n• Regular las emociones\n• Promover el bienestar general",
+                privacy: "Tu privacidad es importante. Esta aplicación funciona completamente en tu navegador y no recopila ningún dato personal."
+            };
+            
+            // Create a simple modal
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(22, 27, 34, 0.95);
+                border: 1px solid rgba(88, 166, 255, 0.3);
+                border-radius: 10px;
+                padding: 30px;
+                max-width: 400px;
+                z-index: 1000;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            `;
+            
+            modal.innerHTML = `
+                <h3 style="color: #58a6ff; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">${
+                    type === 'about' ? 'Acerca de' :
+                    type === 'guide' ? 'Guía de Uso' :
+                    type === 'benefits' ? 'Beneficios' : 'Privacidad'
+                }</h3>
+                <p style="color: #c9d1d9; line-height: 1.6; white-space: pre-line;">${messages[type]}</p>
+                <button onclick="this.parentElement.remove(); document.getElementById('overlay').remove();" 
+                        style="margin-top: 20px; width: 100%;">Cerrar</button>
+            `;
+            
+            const overlay = document.createElement('div');
+            overlay.id = 'overlay';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+            `;
+            overlay.onclick = function() {
+                modal.remove();
+                overlay.remove();
+            };
+            
+            document.body.appendChild(overlay);
+            document.body.appendChild(modal);
+        }
+        
+        timerOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                if (isRunning) return;
+                
+                timerOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                selectedDuration = parseInt(this.dataset.time);
+                updateTimerDisplay(selectedDuration * 60);
+            });
+        });
+        
+        function updateTimerDisplay(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            timerDisplay.textContent = `${minutes}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        function updateProgressBar() {
+            const progress = ((totalSeconds - currentSeconds) / totalSeconds) * 100;
+            progressFill.style.width = `${progress}%`;
+        }
+        
+        function startBreathing() {
+            if (isRunning) return;
+            
+            isRunning = true;
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            
+            initAudio();
+            
+            timerOptions.forEach(opt => opt.style.pointerEvents = 'none');
+            
+            totalSeconds = selectedDuration * 60;
+            currentSeconds = totalSeconds;
+            
+            const inhaleTime = parseInt(document.getElementById('inhaleTime').value) * 1000;
+            const hold1Time = parseInt(document.getElementById('hold1Time').value) * 1000;
+            const exhaleTime = parseInt(document.getElementById('exhaleTime').value) * 1000;
+            const hold2Time = parseInt(document.getElementById('hold2Time').value) * 1000;
+            
+            timerInterval = setInterval(() => {
+                currentSeconds--;
+                updateTimerDisplay(currentSeconds);
+                updateProgressBar();
+                
+                if (currentSeconds <= 0) {
+                    stopBreathing();
+                    phaseText.textContent = '¡Ejercicio Completado!';
+                    playSound(800, 0.3); // Completion sound
+                }
+            }, 1000);
+            
+            inhale(inhaleTime, hold1Time, exhaleTime, hold2Time);
+        }
+        
+        function inhale(inhaleTime, hold1Time, exhaleTime, hold2Time) {
+            if (!isRunning) return;
+            
+            breathingCircle.className = 'breathing-circle inhale';
+            phaseText.textContent = 'Inhala';
+            
+            breathingCircle.style.animationDuration = `${inhaleTime/1000}s`;
+            
+            setTimeout(() => {
+                playSound(400, 0.15); // Inhale completion sound
+                hold1(hold1Time, exhaleTime, hold2Time);
+            }, inhaleTime);
+        }
+        
+        function hold1(hold1Time, exhaleTime, hold2Time) {
+            if (!isRunning) return;
+            
+            breathingCircle.className = 'breathing-circle hold1';
+            phaseText.textContent = 'Mantén';
+            
+            breathingCircle.style.animationDuration = `${hold1Time/1000}s`;
+            
+            setTimeout(() => {
+                playSound(500, 0.15); // Hold1 completion sound
+                exhale(exhaleTime, hold2Time);
+            }, hold1Time);
+        }
+        
+        function exhale(exhaleTime, hold2Time) {
+            if (!isRunning) return;
+            
+            breathingCircle.className = 'breathing-circle exhale';
+            phaseText.textContent = 'Exhala';
+            
+            breathingCircle.style.animationDuration = `${exhaleTime/1000}s`;
+            
+            setTimeout(() => {
+                playSound(300, 0.15); // Exhale completion sound
+                hold2(hold2Time);
+            }, exhaleTime);
+        }
+        
+        function hold2(hold2Time) {
+            if (!isRunning) return;
+            
+            breathingCircle.className = 'breathing-circle hold2';
+            phaseText.textContent = 'Mantén';
+            
+            breathingCircle.style.animationDuration = `${hold2Time/1000}s`;
+            
+            setTimeout(() => {
+                playSound(350, 0.15); // Hold2 completion sound
+                const inhaleTime = parseInt(document.getElementById('inhaleTime').value) * 1000;
+                const hold1Time = parseInt(document.getElementById('hold1Time').value) * 1000;
+                const exhaleTime = parseInt(document.getElementById('exhaleTime').value) * 1000;
+                inhale(inhaleTime, hold1Time, exhaleTime, hold2Time);
+            }, hold2Time);
+        }
+        
+        function stopBreathing() {
+            isRunning = false;
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            
+            timerOptions.forEach(opt => opt.style.pointerEvents = 'auto');
+            
+            clearInterval(timerInterval);
+            
+            breathingCircle.className = 'breathing-circle';
+            phaseText.textContent = 'Presiona "Iniciar" para comenzar';
+            
+            updateTimerDisplay(selectedDuration * 60);
+            progressFill.style.width = '0%';
+        }
+        
+        // Initialize
+        updateTimerDisplay(selectedDuration * 60);
+    </script>
+</body>
+</html>
