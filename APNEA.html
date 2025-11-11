@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Océano Profundo! 🌊🐠</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Bubblegum+Sans&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #0c1445 0%, #1e3a8a 50%, #3b82f6 100%);
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            background: radial-gradient(circle at top, #1e40af, #0c1445);
+        }
+
+        /* CARA DEL NIÑO */
+        #kid-face {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 340px; height: 340px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            z-index: 30;
+            pointer-events: none;
+            filter: drop-shadow(0 15px 40px rgba(0,0,0,0.7));
+        }
+        #game-screen:not(.hidden) #kid-face { opacity: 1; }
+
+        .kid-happy { background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="%2300ff88"/><circle cx="35" cy="35" r="10" fill="white"/><circle cx="35" cy="35" r="5" fill="black"/><circle cx="65" cy="35" r="10" fill="white"/><circle cx="65" cy="35" r="5" fill="black"/><path d="M30 60 Q50 75 70 60" stroke="white" stroke-width="6" fill="none" stroke-linecap="round"/></svg>'); }
+        .kid-worried { background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="%23ffdb00"/><circle cx="35" cy="35" r="10" fill="white"/><circle cx="35" cy="35" r="5" fill="black"/><circle cx="65" cy="35" r="10" fill="white"/><circle cx="65" cy="35" r="5" fill="black"/><path d="M30 70 Q50 60 70 70" stroke="white" stroke-width="6" fill="none" stroke-linecap="round"/></svg>'); }
+        .kid-danger { background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="%23ff4444"/><circle cx="35" cy="35" r="10" fill="white"/><circle cx="35" cy="35" r="5" fill="black"/><circle cx="65" cy="35" r="10" fill="white"/><circle cx="65" cy="35" r="5" fill="black"/><path d="M30 75 L70 75" stroke="white" stroke-width="6" fill="none"/><path d="M40 55 L40 65 M60 55 L60 65" stroke="white" stroke-width="6" fill="none"/></svg>'); }
+
+        .wave { position: absolute; bottom: 0; width: 200%; height: 300px; background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg"><path d="M0,100 Q300,200 600,100 T1200,100 L1200,300 L0,300 Z" fill="%233b82f6"/></svg>') repeat-x; animation: wave 12s linear infinite; opacity: 0.6; z-index: 1; }
+        .wave:nth-child(2) { height: 250px; animation: wave 18s linear infinite reverse; opacity: 0.4; background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg"><path d="M0,150 Q300,250 600,150 T1200,150 L1200,300 L0,300 Z" fill="%2366b2ff"/></svg>') repeat-x; }
+        @keyframes wave { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        .bubble { position: absolute; bottom: -100px; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.2)); border-radius: 50%; animation: float 8s infinite ease-in-out; box-shadow: inset 0 0 20px rgba(255,255,255,0.5); z-index: 1; }
+        @keyframes float { 0% { transform: translateY(0) translateX(0) rotate(0deg); } 50% { transform: translateY(-100vh) translateX(50px) rotate(180deg); } 100% { transform: translateY(-120vh) translateX(-30px) rotate(360deg); } }
+
+        #ui { position: absolute; top: 0; left: 0; right: 0; bottom: 0; padding: 30px; pointer-events: none; z-index: 10; }
+
+        #title { text-align: center; font-family: 'Fredoka One', cursive; font-size: 4.5rem; background: linear-gradient(45deg, #00ff88, #00ccff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 20px; animation: glow 3s ease-in-out infinite alternate; }
+        @keyframes glow { from { filter: drop-shadow(0 0 20px #00ffff); } to { filter: drop-shadow(0 0 40px #00ff88); } }
+
+        .btn { padding: 18px 36px; font-size: 1.4rem; font-weight: 800; border: none; border-radius: 50px; cursor: pointer; margin: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); transition: all 0.3s ease; pointer-events: auto; font-family: 'Bubblegum Sans', cursive; }
+        .btn-primary { background: linear-gradient(45deg, #ff6b6b, #ff8e53); color: white; }
+        .btn-secondary { background: linear-gradient(45deg, #4ecdc4, #44a08d); color: white; }
+        .btn-success { background: linear-gradient(45deg, #51cf66, #40c057); color: white; }
+        .btn-reto { background: linear-gradient(45deg, #9c27b0, #e91e63); color: white; }
+        .btn:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+
+        .screen { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; z-index: 5; }
+        .hidden { opacity: 0; pointer-events: none; }
+
+        #oxigeno-container { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); width: 80%; max-width: 600px; z-index: 15; }
+        #oxigeno-bar { height: 50px; background: rgba(0,0,0,0.5); border-radius: 50px; overflow: hidden; border: 4px solid #00ffff; box-shadow: 0 0 30px #00ffff; }
+        #oxigeno-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #00ff88, #00ccff); transition: width 0.4s ease; position: relative; }
+        #oxigeno-fill::after { content: "OXÍGENO"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; color: white; text-shadow: 2px 2px 4px black; }
+
+        #diver { position: absolute; bottom: 200px; left: 50%; transform: translateX(-50%); width: 120px; height: 160px; background-size: contain; background-repeat: no-repeat; background-position: center; animation: floatDiver 4s ease-in-out infinite; z-index: 5; }
+        @keyframes floatDiver { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-20px); } }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- CARA DEL NIÑO -->
+        <div id="kid-face" class="kid-happy"></div>
+
+        <div class="wave"></div>
+        <div class="wave"></div>
+
+        <div class="bubble" style="width:40px;height:40px;left:10%;animation-delay:0s;"></div>
+        <div class="bubble" style="width:60px;height:60px;left:25%;animation-delay:2s;"></div>
+        <div class="bubble" style="width:30px;height:30px;left:40%;animation-delay:1s;"></div>
+        <div class="bubble" style="width:50px;height:50px;left:60%;animation-delay:3s;"></div>
+        <div class="bubble" style="width:45px;height:45px;left:80%;animation-delay:1.5s;"></div>
+
+        <!-- SONIDO TRIUNFAL -->
+        <audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3" preload="auto"></audio>
+
+        <div id="ui">
+            <!-- PANTALLA INICIAL -->
+            <div id="start-screen" class="screen">
+                <h1 id="title">¡OCÉANO PROFUNDO!</h1>
+                <p style="font-size:1.8rem; margin:20px 0; background:rgba(0,0,0,0.4); padding:15px 30px; border-radius:25px;">
+                    Entrena tus pulmones
+                </p>
+
+                <div style="background:rgba(255,255,255,0.15); padding:30px; border-radius:25px; backdrop-filter:blur(10px); width:90%; max-width:800px;">
+                    <h3 style="text-align:center; margin-bottom:25px; font-size:2rem;">Elige tu desafío</h3>
+                    <div style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center;">
+                        <!-- INTERCAMBIADOS -->
+                        <button class="btn btn-success" onclick="iniciarJuego('dificil')">
+                            Apnea Difícil<br><small>20 segundos</small>
+                        </button>
+                        <button class="btn btn-primary" onclick="iniciarJuego('medio')">
+                            Apnea Medio<br><small>15 segundos</small>
+                        </button>
+                        <button class="btn btn-secondary" onclick="iniciarJuego('facil')">
+                            Apnea Fácil<br><small>10 segundos</small>
+                        </button>
+                        <button class="btn btn-reto" onclick="iniciarJuego('reto')">
+                            RETO<br><small>¡Cuenta arriba!</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div style="margin-top:30px;">
+                    <p style="font-size:1.2rem; opacity:0.9;">Récord: <strong id="record">0</strong> puntos</p>
+                </div>
+            </div>
+
+            <!-- JUEGO -->
+            <div id="game-screen" class="screen hidden">
+                <div style="position:absolute; top:30px; left:30px;">
+                    <div style="background:rgba(0,0,0,0.4); padding:15px 25px; border-radius:25px; backdrop-filter:blur(10px);">
+                        Puntos: <span id="score">0</span>
+                    </div>
+                </div>
+                <div id="timer" style="font-size:2.5rem; font-weight:800;">¡Listo!</div>
+                <div id="diver"></div>
+                <div style="position:absolute; bottom:120px; left:50%; transform:translateX(-50%);">
+                    <button class="btn btn-primary" id="diveBtn">¡SUMERGIRME!</button>
+                    <button class="btn btn-secondary" id="emergency">¡EMERGENCIA!</button>
+                </div>
+            </div>
+
+            <!-- RESULTADO -->
+            <div id="result-screen" class="screen hidden">
+                <h1 id="resultTitle" style="font-size:4rem; margin:20px 0;"></h1>
+                <p id="resultText" style="font-size:1.8rem; text-align:center; max-width:700px;"></p>
+                <button class="btn btn-primary" onclick="location.reload()">¡Jugar de nuevo!</button>
+            </div>
+
+            <div id="oxigeno-container">
+                <div id="oxigeno-bar">
+                    <div id="oxigeno-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let modo = 'medio';
+        let tiempoMax = 15;
+        let currentTimer = 0;
+        let contadorReto = 0;
+
+        const screens = {
+            start: document.getElementById('start-screen'),
+            game: document.getElementById('game-screen'),
+            result: document.getElementById('result-screen')
+        };
+
+        const kidFace = document.getElementById('kid-face');
+        const winSound = document.getElementById('winSound');
+
+        // Buceador fijo
+        document.getElementById('diver').style.backgroundImage = `url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="25" r="20" fill="%23ffdb99"/><rect x="30" y="45" width="40" height="50" rx="20" fill="%2300ccff"/><rect x="20" y="95" width="25" height="40" rx="12" fill="%2300ccff"/><rect x="55" y="95" width="25" height="40" rx="12" fill="%2300ccff"/><circle cx="40" cy="20" r="5" fill="black"/><circle cx="60" cy="20" r="5" fill="black"/><circle cx="50" cy="25" r="15" fill="%23ff6b6b" opacity="0.7"/></svg>')`;
+
+        function updateKidFace(pct) {
+            kidFace.className = 'kid-happy';
+            if (pct < 50) kidFace.className = 'kid-worried';
+            if (pct < 25) kidFace.className = 'kid-danger';
+        }
+
+        window.iniciarJuego = m => {
+            modo = m;
+            if (m === 'reto') tiempoMax = 30;
+            else tiempoMax = m === 'facil' ? 10 : m === 'medio' ? 15 : 20; // INTERCAMBIADO
+
+            score = 0;
+            document.getElementById('score').textContent = score;
+            hideAll();
+            screens.game.classList.remove('hidden');
+            kidFace.className = 'kid-happy';
+            contadorReto = 0;
+            document.getElementById('timer').textContent = modo === 'reto' ? "0s" : "¡Listo!";
+            document.getElementById('oxigeno-fill').style.width = '100%';
+        };
+
+        document.getElementById('diveBtn').onclick = () => {
+            document.getElementById('diveBtn').style.display = 'none';
+            kidFace.className = 'kid-happy';
+            updateKidFace(100);
+
+            if (modo !== 'reto') {
+                currentTimer = tiempoMax;
+                document.getElementById('timer').textContent = `¡AGUANTA! ${currentTimer}s`;
+                const int = setInterval(() => {
+                    currentTimer--;
+                    const pct = (currentTimer / tiempoMax) * 100;
+                    document.getElementById('oxigeno-fill').style.width = pct + '%';
+                    document.getElementById('timer').textContent = `¡AGUANTA! ${currentTimer}s`;
+                    updateKidFace(pct);
+                    if (currentTimer <= 0) { clearInterval(int); finalizar(true); }
+                }, 1000);
+            } else {
+                contadorReto = 0;
+                document.getElementById('timer').textContent = "0s";
+                const int = setInterval(() => {
+                    contadorReto++;
+                    const pct = Math.max(0, 100 - (contadorReto / tiempoMax) * 100);
+                    document.getElementById('oxigeno-fill').style.width = pct + '%';
+                    document.getElementById('timer').textContent = `${contadorReto}s`;
+                    updateKidFace(pct);
+                    if (pct <= 0) { clearInterval(int); score += contadorReto * 10; finalizar(true); }
+                }, 1000);
+            }
+        };
+
+        document.getElementById('emergency').onclick = () => finalizar(false);
+
+        function finalizar(exito) {
+            const rec = localStorage.getItem('recordSubmarino') || 0;
+            if (score > rec) localStorage.setItem('recordSubmarino', score);
+            hideAll(); screens.result.classList.remove('hidden');
+            kidFace.className = 'kid-happy';
+            document.getElementById('resultTitle').textContent = exito ? "¡ÉXITO TOTAL! 🎉" : "¡Bien hecho por parar! 🛑";
+            document.getElementById('resultText').innerHTML = exito
+                ? `¡Increíble!<br>Puntos: <strong>${score}</strong><br>${modo === 'reto' ? `¡Aguantaste ${contadorReto}s!` : ''} 💪`
+                : `Seguridad primero<br>Puntos: <strong>${score}</strong>`;
+            document.getElementById('record').textContent = localStorage.getItem('recordSubmarino') || 0;
+
+            if (exito) {
+                winSound.currentTime = 0;
+                winSound.play();
+            }
+        }
+
+        function hideAll() { Object.values(screens).forEach(s => s.classList.add('hidden')); }
+
+        const record = localStorage.getItem('recordSubmarino');
+        if (record) document.getElementById('record').textContent = record;
+    </script>
+</body>
+</html>
