@@ -3,232 +3,873 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="google-adsense-account" content="ca-pub-2358850294363122">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2358850294363122"
-crossorigin="anonymous"></script>
 <title>CristoPlay • Juegos de Cristóbal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <style>
 :root {
---netflix-red: #E50914;
---bg: #141414;
---card-bg: #221f1f;
---text: #fff;
---hover: #00ff2b;
+  --neon-cyan: #00f5ff;
+  --neon-pink: #ff0090;
+  --neon-green: #39ff14;
+  --neon-yellow: #ffe600;
+  --bg-deep: #050510;
+  --bg-mid: #0a0a1a;
+  --card-bg: #0d0d24;
+  --card-border: #1a1a3e;
+  --text: #e8e8ff;
+  --text-dim: #7070aa;
+  --glow-cyan: 0 0 20px #00f5ff88, 0 0 60px #00f5ff33;
+  --glow-pink: 0 0 20px #ff009088, 0 0 60px #ff009033;
+  --glow-green: 0 0 20px #39ff1488, 0 0 60px #39ff1433;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
-font-family: 'Netflix Sans', Arial, sans-serif;
-background: var(--bg);
-color: var(--text);
-overflow-x: hidden;
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--bg-deep);
+  color: var(--text);
+  overflow-x: hidden;
+  min-height: 100vh;
 }
+
+/* ─── ANIMATED GRID BACKGROUND ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  z-index: 0;
+  animation: gridDrift 20s linear infinite;
+}
+
+@keyframes gridDrift {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(60px); }
+}
+
+/* ─── AMBIENT BLOBS ─── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 600px 400px at 10% 20%, rgba(0,245,255,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 350px at 90% 80%, rgba(255,0,144,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 300px at 50% 50%, rgba(57,255,20,0.04) 0%, transparent 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ─── SCANLINES ─── */
+.scanlines {
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ─── HEADER ─── */
 header {
-position: fixed;
-top: 0; left: 0; right: 0;
-height: 70px;
-background: linear-gradient(to bottom, rgba(0,0,0,.8), transparent);
-display: flex;
-align-items: center;
-padding: 0 4%;
-z-index: 100;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  padding: 0 5%;
+  z-index: 100;
+  background: linear-gradient(to bottom, rgba(5,5,16,0.95), transparent);
+  backdrop-filter: blur(4px);
+  border-bottom: 1px solid rgba(0,245,255,0.08);
 }
+
 .logo {
-font-size: 2.5rem;
-font-weight: 900;
-color: var(--netflix-red);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
 }
-.logo i { margin-right: 10px; }
-.profile {
-margin-left: auto;
-display: flex;
-align-items: center;
-gap: 10px;
-font-size: 1.1rem;
+
+.logo-icon {
+  width: 46px; height: 46px;
+  background: linear-gradient(135deg, #00f5ff22, #ff009022);
+  border: 1.5px solid var(--neon-cyan);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  color: var(--neon-cyan);
+  box-shadow: var(--glow-cyan);
+  animation: iconPulse 3s ease-in-out infinite;
 }
+
+@keyframes iconPulse {
+  0%, 100% { box-shadow: var(--glow-cyan); }
+  50% { box-shadow: 0 0 30px #00f5ffaa, 0 0 80px #00f5ff55; }
+}
+
+.logo-text {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.logo-sub {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  font-family: 'Orbitron', monospace;
+}
+
+.header-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.status-dot {
+  width: 8px; height: 8px;
+  background: var(--neon-green);
+  border-radius: 50%;
+  box-shadow: var(--glow-green);
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.profile-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0,245,255,0.06);
+  border: 1px solid rgba(0,245,255,0.2);
+  padding: 6px 14px 6px 8px;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--neon-cyan);
+  transition: all 0.3s;
+}
+
+.profile-chip:hover {
+  background: rgba(0,245,255,0.12);
+  box-shadow: var(--glow-cyan);
+}
+
 .avatar {
-width: 40px; height: 40px;
-border-radius: 50%;
-background: var(--hover);
-display: grid;
-place-items: center;
-font-size: 1.4rem;
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  font-weight: 900;
+  color: #000;
+  font-family: 'Orbitron', monospace;
 }
-main { margin-top: 80px; padding: 20px 4%; }
-h1 {
-font-size: 2.8rem;
-margin: 30px 0 15px;
-text-shadow: 0 2px 10px rgba(0,0,0,.8);
+
+/* ─── HERO ─── */
+main {
+  position: relative;
+  z-index: 2;
+  padding-top: 110px;
 }
-.row {
-margin-bottom: 40px;
+
+.hero {
+  padding: 30px 5% 50px;
+  position: relative;
 }
-.row-title {
-font-size: 1.6rem;
-margin-bottom: 12px;
-color: var(--hover);
+
+.hero-label {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 5px;
+  color: var(--neon-pink);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
+
+.hero-label::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: var(--neon-pink);
+  box-shadow: var(--glow-pink);
+}
+
+.hero h1 {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  margin-bottom: 18px;
+}
+
+.hero h1 span.name {
+  background: linear-gradient(90deg, var(--neon-cyan), #8888ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px #00f5ff66);
+}
+
+.hero h1 span.accent {
+  color: var(--neon-yellow);
+  text-shadow: 0 0 20px #ffe60088;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  font-weight: 300;
+}
+
+/* ─── STATS BAR ─── */
+.stats-bar {
+  display: flex;
+  gap: 30px;
+  padding: 20px 5%;
+  border-top: 1px solid rgba(0,245,255,0.08);
+  border-bottom: 1px solid rgba(0,245,255,0.08);
+  margin-bottom: 50px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.stats-bar::-webkit-scrollbar { display: none; }
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: fit-content;
+  padding: 0 20px;
+  border-right: 1px solid rgba(0,245,255,0.1);
+}
+
+.stat:last-child { border-right: none; }
+
+.stat-value {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 15px #00f5ff88;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* ─── SECTION ─── */
+.section {
+  padding: 0 5% 60px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 24px;
+}
+
+.section-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+}
+
+.section-icon.cyan {
+  background: rgba(0,245,255,0.1);
+  border: 1px solid rgba(0,245,255,0.3);
+  color: var(--neon-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.section-icon.pink {
+  background: rgba(255,0,144,0.1);
+  border: 1px solid rgba(255,0,144,0.3);
+  color: var(--neon-pink);
+  box-shadow: var(--glow-pink);
+}
+
+.section-icon.green {
+  background: rgba(57,255,20,0.1);
+  border: 1px solid rgba(57,255,20,0.3);
+  color: var(--neon-green);
+  box-shadow: var(--glow-green);
+}
+
+.section-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.section-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, rgba(0,245,255,0.2), transparent);
+}
+
+.section-count {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+}
+
+/* ─── CAROUSEL ─── */
 .carousel {
-display: flex;
-gap: 15px;
-overflow-x: auto;
-padding: 10px 0;
-scroll-snap-type: x mandatory;
-scrollbar-width: none;
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 10px 4px 20px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,245,255,0.2) transparent;
 }
-.carousel::-webkit-scrollbar { display: none; }
+
+.carousel::-webkit-scrollbar {
+  height: 3px;
+}
+.carousel::-webkit-scrollbar-track { background: transparent; }
+.carousel::-webkit-scrollbar-thumb {
+  background: rgba(0,245,255,0.3);
+  border-radius: 10px;
+}
+
+/* ─── GAME CARD ─── */
 .game-card {
-flex: 0 0 260px;
-height: 360px;
-background: var(--card-bg);
-border-radius: 12px;
-overflow: hidden;
-position: relative;
-scroll-snap-align: start;
-transition: all .4s ease;
-cursor: pointer;
-box-shadow: 0 8px 20px rgba(0,0,0,.6);
+  flex: 0 0 280px;
+  height: 390px;
+  background: var(--card-bg);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  scroll-snap-align: start;
+  cursor: pointer;
+  border: 1px solid var(--card-border);
+  transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+              border-color 0.35s ease,
+              box-shadow 0.35s ease;
+  animation: cardIn 0.5s ease backwards;
 }
+
+.game-card:nth-child(1) { animation-delay: 0.05s; }
+.game-card:nth-child(2) { animation-delay: 0.12s; }
+.game-card:nth-child(3) { animation-delay: 0.19s; }
+.game-card:nth-child(4) { animation-delay: 0.26s; }
+.game-card:nth-child(5) { animation-delay: 0.33s; }
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .game-card:hover {
-transform: scale(1.08);
-z-index: 10;
-box-shadow: 0 20px 40px rgba(0,255,43,.4);
+  transform: translateY(-8px) scale(1.03);
+  border-color: rgba(0,245,255,0.5);
+  box-shadow:
+    0 20px 50px rgba(0,0,0,0.8),
+    0 0 0 1px rgba(0,245,255,0.2),
+    0 0 40px rgba(0,245,255,0.15),
+    inset 0 0 30px rgba(0,245,255,0.03);
 }
-.game-card img {
-width: 100%;
-height: 100%;
-object-fit: cover;
+
+.game-card.pink:hover {
+  border-color: rgba(255,0,144,0.5);
+  box-shadow:
+    0 20px 50px rgba(0,0,0,0.8),
+    0 0 0 1px rgba(255,0,144,0.2),
+    0 0 40px rgba(255,0,144,0.15);
 }
+
+.game-card.green:hover {
+  border-color: rgba(57,255,20,0.5);
+  box-shadow:
+    0 20px 50px rgba(0,0,0,0.8),
+    0 0 0 1px rgba(57,255,20,0.2),
+    0 0 40px rgba(57,255,20,0.15);
+}
+
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+  filter: brightness(0.75) saturate(1.2);
+}
+
+.game-card:hover .card-img {
+  transform: scale(1.06);
+  filter: brightness(0.6) saturate(1.4);
+}
+
+/* Card gradient overlay */
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 30%,
+    rgba(5,5,16,0.5) 60%,
+    rgba(5,5,16,0.97) 100%
+  );
+}
+
+/* Play button */
 .play-btn {
-position: absolute;
-top: 50%; left: 50%;
-transform: translate(-50%,-50%);
-width: 80px; height: 80px;
-background: rgba(0,0,0,.7);
-border: 4px solid white;
-border-radius: 50%;
-display: grid;
-place-items: center;
-font-size: 2.5rem;
-color: white;
-opacity: 0;
-transition: opacity .3s;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.7);
+  width: 70px; height: 70px;
+  border: 2px solid rgba(255,255,255,0.8);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.8rem;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
 }
-.game-card:hover .play-btn { opacity: 1; }
-.game-title {
-position: absolute;
-bottom: 0;
-width: 100%;
-padding: 20px;
-background: linear-gradient(transparent, rgba(0,0,0,.8));
-font-size: 1.3rem;
-font-weight: 700;
+
+.game-card:hover .play-btn {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
 }
+
+/* Card info */
+.card-info {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  padding: 20px;
+}
+
+.card-category {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+  margin-bottom: 6px;
+  opacity: 0.8;
+}
+
+.card-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-action {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  color: var(--neon-cyan);
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.game-card:hover .card-action {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Badge */
 .badge {
-position: absolute;
-top: 12px; left: 12px;
-background: var(--netflix-red);
-color: white;
-padding: 4px 10px;
-border-radius: 4px;
-font-size: .8rem;
-font-weight: bold;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  z-index: 2;
 }
+
+.badge.nuevo {
+  background: linear-gradient(135deg, #ff0090, #ff6600);
+  color: white;
+  box-shadow: 0 0 15px rgba(255,0,144,0.5);
+}
+
+.badge.top {
+  background: linear-gradient(135deg, #ffe600, #ff9900);
+  color: #000;
+  box-shadow: 0 0 15px rgba(255,230,0,0.5);
+}
+
+/* ─── FEATURED CARD (first card larger) ─── */
+.game-card.featured {
+  flex: 0 0 380px;
+  height: 390px;
+}
+
+/* ─── FOOTER ─── */
 footer {
-text-align: center;
-padding: 40px;
-font-size: .9rem;
-opacity: .6;
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 50px 5%;
+  border-top: 1px solid rgba(0,245,255,0.06);
+  margin-top: 20px;
 }
+
+.footer-logo {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.2rem;
+  font-weight: 900;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+}
+
+.footer-text {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+}
+
+.footer-text i {
+  color: var(--neon-pink);
+  filter: drop-shadow(0 0 6px #ff009088);
+}
+
+/* ─── CORNER DECORATIONS ─── */
+.corner {
+  position: fixed;
+  z-index: 50;
+  width: 60px; height: 60px;
+  pointer-events: none;
+}
+
+.corner-tl {
+  top: 0; left: 0;
+  border-top: 2px solid var(--neon-cyan);
+  border-left: 2px solid var(--neon-cyan);
+  border-top-left-radius: 4px;
+  box-shadow: -2px -2px 10px rgba(0,245,255,0.3);
+}
+
+.corner-br {
+  bottom: 0; right: 0;
+  border-bottom: 2px solid var(--neon-pink);
+  border-right: 2px solid var(--neon-pink);
+  border-bottom-right-radius: 4px;
+  box-shadow: 2px 2px 10px rgba(255,0,144,0.3);
+}
+
+/* ─── RESPONSIVE ─── */
 @media (max-width: 760px) {
-.game-card { flex: 0 0 180px; height: 260px; }
-h1 { font-size: 2rem; }
+  .game-card { flex: 0 0 220px; height: 310px; }
+  .game-card.featured { flex: 0 0 280px; height: 310px; }
+  .hero h1 { font-size: 2rem; }
+  .stats-bar { gap: 0; }
+  .stat { padding: 0 16px; }
+  .logo-sub { display: none; }
+}
+
+/* ─── CURSOR GLOW ─── */
+.cursor-glow {
+  position: fixed;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(circle, rgba(0,245,255,0.04) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  transition: left 0.1s ease, top 0.1s ease;
 }
 </style>
 </head>
 <body>
+
+<!-- Decorations -->
+<div class="scanlines"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
+<div class="corner corner-tl"></div>
+<div class="corner corner-br"></div>
+
+<!-- HEADER -->
 <header>
-<div class="logo"><i class="fa-solid fa-gamepad"></i> CristoPlay</div>
-<div class="profile">
-<div class="avatar">C</div>
-<span>Cristóbal</span>
-</div>
+  <a class="logo" href="#">
+    <div class="logo-icon"><i class="fa-solid fa-gamepad"></i></div>
+    <div>
+      <div class="logo-text">CristoPlay</div>
+      <div class="logo-sub">Game Station</div>
+    </div>
+  </a>
+  <div class="header-right">
+    <div class="status-dot"></div>
+    <div class="profile-chip">
+      <div class="avatar">C</div>
+      Cristóbal
+    </div>
+  </div>
 </header>
 
 <main>
-<h1>¡Hola Cristóbal! <br> Elige tu aventura</h1>
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-label">Player One</div>
+    <h1>¡Hola, <span class="name">Cristóbal</span>!<br>Elige tu <span class="accent">aventura</span></h1>
+    <p class="hero-subtitle">Tu espacio personal de juegos &amp; bienestar</p>
+  </div>
 
-<!-- FILA 1: Juegos de respiración -->
-<section class="row">
-<div class="row-title">Respiración</div>
-<div class="carousel" id="tenis-row"></div>
-</section>
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-value">08</div>
+      <div class="stat-label">Juegos</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">03</div>
+      <div class="stat-label">Categorías</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">∞</div>
+      <div class="stat-label">Diversión</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="hora-stat">--</div>
+      <div class="stat-label">Hora actual</div>
+    </div>
+  </div>
 
-<!-- FILA 2: Juegos de Viento -->
-<section class="row">
-<div class="row-title">MiniSudokus</div>
-<div class="carousel" id="viento-row"></div>
-</section>
+  <!-- SECCIÓN: Respiración -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-icon cyan"><i class="fa-solid fa-wind"></i></div>
+      <div class="section-title" style="color:var(--neon-cyan)">Respiración</div>
+      <div class="section-line"></div>
+      <div class="section-count">3 juegos</div>
+    </div>
+    <div class="carousel" id="row-respiracion"></div>
+  </section>
 
-<!-- FILA 3: Juegos Educativos -->
-<section class="row">
-<div class="row-title">Vision</div>
-<div class="carousel" id="edu-row"></div>
-</section>
+  <!-- SECCIÓN: MiniSudokus -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-icon pink"><i class="fa-solid fa-brain"></i></div>
+      <div class="section-title" style="color:var(--neon-pink)">MiniSudokus</div>
+      <div class="section-line" style="background:linear-gradient(to right, rgba(255,0,144,0.2), transparent)"></div>
+      <div class="section-count">2 juegos</div>
+    </div>
+    <div class="carousel" id="row-sudoku"></div>
+  </section>
+
+  <!-- SECCIÓN: Visión -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-icon green"><i class="fa-solid fa-eye"></i></div>
+      <div class="section-title" style="color:var(--neon-green)">Visión</div>
+      <div class="section-line" style="background:linear-gradient(to right, rgba(57,255,20,0.2), transparent)"></div>
+      <div class="section-count">3 juegos</div>
+    </div>
+    <div class="carousel" id="row-vision"></div>
+  </section>
 </main>
 
 <footer>
-<p>Hecho con <i class="fa-solid fa-heart"></i> para Cristóbal • Respira tranquilo y juega feliz</p>
+  <div class="footer-logo">⬡ CristoPlay</div>
+  <div class="footer-text">Hecho con <i class="fa-solid fa-heart"></i> para Cristóbal &nbsp;•&nbsp; Respira tranquilo y juega feliz</div>
 </footer>
 
 <script>
-// ==== CATÁLOGO DE JUEGOS ====
+// ─── CATÁLOGO ───────────────────────────────────────────────────────────────
 const juegos = [
-// RESPIRACION
-{titulo:"Respiración en Calma", url:"INHALAEXAHALA.html", img:"IMAGENES/INHALAEXAHALA.png", fila:"tenis", badge:"NUEVO"},
-{titulo:"Apnea", url:"APNEA.html", img:"https://i.postimg.cc/3xV8kL2M/saque.jpg", fila:"tenis"},
-{titulo:"Respira profundo", url:"respira.html", img:"https://i.postimg.cc/9Q8jK9pL/torneo.jpg", fila:"tenis"},
+  // RESPIRACIÓN
+  {
+    titulo: "Respiración en Calma",
+    url: "INHALAEXAHALA.html",
+    img: "IMAGENES/INHALAEXAHALA.png",
+    fila: "respiracion",
+    badge: "nuevo",
+    categoria: "Relajación",
+    featured: true
+  },
+  {
+    titulo: "Apnea",
+    url: "APNEA.html",
+    img: "https://i.postimg.cc/3xV8kL2M/saque.jpg",
+    fila: "respiracion",
+    categoria: "Respiración"
+  },
+  {
+    titulo: "Respira Profundo",
+    url: "respira.html",
+    img: "https://i.postimg.cc/9Q8jK9pL/torneo.jpg",
+    fila: "respiracion",
+    categoria: "Bienestar"
+  },
 
- // MINISUDOKU
-{titulo:"Minisudoku 4x4", url:"minisudoku4x4.html", img:"https://i.postimg.cc/3wQbL9pJ/wind.jpg", fila:"viento", badge:"TOP"},
-{titulo:"Minisudoku 6x6", url:"minisudoku6x6.html", img:"https://i.postimg.cc/5y5kL2mN/windwise.jpg", fila:"viento"},
+  // SUDOKU
+  {
+    titulo: "Minisudoku 4×4",
+    url: "minisudoku4x4.html",
+    img: "https://i.postimg.cc/3wQbL9pJ/wind.jpg",
+    fila: "sudoku",
+    badge: "top",
+    categoria: "Lógica",
+    featured: true
+  },
+  {
+    titulo: "Minisudoku 6×6",
+    url: "minisudoku6x6.html",
+    img: "https://i.postimg.cc/5y5kL2mN/windwise.jpg",
+    fila: "sudoku",
+    categoria: "Lógica"
+  },
 
-// VISION
-{titulo:"PMP Boost Quiz", url:"https://pmpboost.vercel.app", img:"https://i.postimg.cc/3xV8kL2M/pmp.jpg", fila:"edu"},
-{titulo:"Matemáticas Mágicas", url:"https://mate-magica.html", img:"https://i.postimg.cc/9Q8jK9pL/mate.jpg", fila:"edu"},
-{titulo:"Ciencias con Leo", url:"https://ciencias-leo.html", img:"https://i.postimg.cc/5yG8gJ8Q/ciencia.jpg", fila:"edu"},
-
+  // VISIÓN
+  {
+    titulo: "PMP Boost Quiz",
+    url: "https://pmpboost.vercel.app",
+    img: "https://i.postimg.cc/3xV8kL2M/pmp.jpg",
+    fila: "vision",
+    categoria: "Quiz",
+    featured: true
+  },
+  {
+    titulo: "Matemáticas Mágicas",
+    url: "https://mate-magica.html",
+    img: "https://i.postimg.cc/9Q8jK9pL/mate.jpg",
+    fila: "vision",
+    categoria: "Matemáticas"
+  },
+  {
+    titulo: "Ciencias con Leo",
+    url: "https://ciencias-leo.html",
+    img: "https://i.postimg.cc/5yG8gJ8Q/ciencia.jpg",
+    fila: "vision",
+    categoria: "Ciencias"
+  },
 ];
 
-// ==== RENDERIZAR FILAS ====
-const filas = {
-tenis: document.getElementById('tenis-row'),
-viento: document.getElementById('viento-row'),
-edu: document.getElementById('edu-row'),
-fav: document.getElementById('fav-row')
+// Colores por sección
+const filaMeta = {
+  respiracion: { color: "cyan",  row: "row-respiracion" },
+  sudoku:      { color: "pink",  row: "row-sudoku"      },
+  vision:      { color: "green", row: "row-vision"      },
 };
 
+// ─── RENDER ─────────────────────────────────────────────────────────────────
 juegos.forEach(j => {
-const card = document.createElement('div');
-card.className = 'game-card';
-card.innerHTML = `
-       <img src="${j.img}" alt="${j.titulo}" loading="lazy">
-       ${j.badge ? `<span class="badge">${j.badge}</span>` : ''}
-       <div class="play-btn"><i class="fa-solid fa-play"></i></div>
-       <div class="game-title">${j.titulo}</div>
-     `;
-card.onclick = () => window.open(j.url, '_blank');
-filas[j.fila].appendChild(card);
+  const meta = filaMeta[j.fila];
+  if (!meta) return;
+
+  const container = document.getElementById(meta.row);
+  const card = document.createElement('div');
+  card.className = `game-card ${meta.color}${j.featured ? ' featured' : ''}`;
+
+  // Fallback color bg si no carga la imagen
+  const fallbackColor = {
+    cyan: 'linear-gradient(135deg,#001a2c,#003a52)',
+    pink: 'linear-gradient(135deg,#1a0010,#3a0022)',
+    green: 'linear-gradient(135deg,#001a04,#003a0a)',
+  }[meta.color];
+
+  card.innerHTML = `
+    <img class="card-img" src="${j.img}" alt="${j.titulo}" loading="lazy"
+         onerror="this.style.display='none'; this.parentElement.style.background='${fallbackColor}'">
+    <div class="card-overlay"></div>
+    ${j.badge ? `<span class="badge ${j.badge}">${j.badge === 'nuevo' ? '✦ NUEVO' : '★ TOP'}</span>` : ''}
+    <div class="play-btn"><i class="fa-solid fa-play"></i></div>
+    <div class="card-info">
+      <div class="card-category">${j.categoria}</div>
+      <div class="card-title">${j.titulo}</div>
+      <div class="card-footer">
+        <span class="card-action">▶ Jugar ahora</span>
+      </div>
+    </div>
+  `;
+
+  card.addEventListener('click', () => window.open(j.url, '_blank'));
+  container.appendChild(card);
 });
 
-// Mensaje de bienvenida con voz (opcional)
-setTimeout(() => {
-if ('speechSynthesis' in window) {
-const msg = new SpeechSynthesisUtterance('¡Hola Cristóbal! Elige tu juego favorito.');
-msg.lang = 'es-ES';
-msg.rate = 0.9;
-speechSynthesis.speak(msg);
+// ─── HORA ───────────────────────────────────────────────────────────────────
+function updateHora() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('hora-stat').textContent = `${h}:${m}`;
 }
+updateHora();
+setInterval(updateHora, 10000);
+
+// ─── CURSOR GLOW ────────────────────────────────────────────────────────────
+const glow = document.getElementById('cursorGlow');
+document.addEventListener('mousemove', e => {
+  glow.style.left = e.clientX + 'px';
+  glow.style.top = e.clientY + 'px';
+});
+
+// ─── SALUDO DE VOZ ──────────────────────────────────────────────────────────
+setTimeout(() => {
+  if ('speechSynthesis' in window) {
+    const msg = new SpeechSynthesisUtterance('¡Hola Cristóbal! Elige tu juego favorito.');
+    msg.lang = 'es-ES';
+    msg.rate = 0.9;
+    speechSynthesis.speak(msg);
+  }
 }, 1500);
 </script>
 </body>
