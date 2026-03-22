@@ -383,6 +383,28 @@ header {
 .racer-finish { position:absolute; font-size:0.9rem; bottom:12px; right:14px; z-index:4; animation:flagWave .6s ease-in-out infinite alternate; }
 @keyframes flagWave{ from{transform:rotate(-8deg)}to{transform:rotate(8deg)} }
 
+/* 2048 */
+.anim-2048{ background:radial-gradient(ellipse at 50% 50%,#07120a,#030a05); }
+.tiles-mini{ display:grid; grid-template-columns:repeat(4,22px); gap:3px; position:relative; z-index:2; }
+.tm{ width:22px; height:22px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-family:'Orbitron',monospace; font-size:0.42rem; font-weight:900; border:1px solid transparent; }
+.tm.e{ background:#0a1a0e; border-color:rgba(57,255,20,0.06); }
+.tm.t2  { background:#0a1e14; color:#39ff14; border-color:#39ff1455; box-shadow:0 0 6px rgba(57,255,20,0.4); }
+.tm.t4  { background:#0a1a2e; color:#00f5ff; border-color:#00f5ff55; box-shadow:0 0 6px rgba(0,245,255,0.4); }
+.tm.t8  { background:#1e0a00; color:#ff6600; border-color:#ff660055; box-shadow:0 0 6px rgba(255,102,0,0.4); }
+.tm.t16 { background:#1e0010; color:#ff0090; border-color:#ff009055; box-shadow:0 0 6px rgba(255,0,144,0.4); }
+.tm.t32 { background:#0e0028; color:#aa00ff; border-color:#aa00ff55; box-shadow:0 0 6px rgba(170,0,255,0.4); }
+.tm.t64 { background:#1e0000; color:#ff1744; border-color:#ff174455; box-shadow:0 0 6px rgba(255,23,68,0.4); }
+.tm.t128{ background:#1a1400; color:#ffe600; border-color:#ffe60055; box-shadow:0 0 8px rgba(255,230,0,0.5); }
+.tm.t256{ background:#001818; color:#00f5ff; border-color:#00f5ff77; box-shadow:0 0 8px rgba(0,245,255,0.6); animation:tmPulse 1.5s ease-in-out infinite alternate; }
+@keyframes tmPulse{ from{box-shadow:0 0 6px rgba(0,245,255,0.4)}to{box-shadow:0 0 14px rgba(0,245,255,0.8)} }
+
+/* NONOGRAMA */
+.anim-nono{ background:radial-gradient(ellipse at 50% 50%,#07120a,#030a05); }
+.nono-mini{ display:grid; grid-template-columns:repeat(5,18px); gap:2px; position:relative; z-index:2; }
+.nc{ width:18px; height:18px; border-radius:3px; background:#0a1a0e; border:1px solid rgba(57,255,20,0.1); transition:all 0.4s; }
+.nc.on{ background:var(--c-sudoku,#39ff14); border-color:rgba(57,255,20,0.6); box-shadow:0 0 8px rgba(57,255,20,0.5); animation:ncPop 0.4s ease; }
+@keyframes ncPop{ 0%{transform:scale(0.7)}60%{transform:scale(1.15)}100%{transform:scale(1)} }
+
 /* GATITO NINJA */
 .anim-ninja { background:linear-gradient(180deg,#08040f,#040208); overflow:hidden; }
 .ninja-floor { position:absolute; bottom:0; left:0; right:0; height:30%; background:linear-gradient(180deg,#1a0f32,#100828); border-top:2px solid rgba(255,0,144,0.4); }
@@ -453,8 +475,8 @@ footer {
 
   <!-- STATS -->
   <div class="stats-bar">
-    <div class="stat"><div class="stat-val">14</div><div class="stat-lbl">Juegos</div></div>
-    <div class="stat"><div class="stat-val">5</div><div class="stat-lbl">Categorías</div></div>
+    <div class="stat"><div class="stat-val">16</div><div class="stat-lbl">Juegos</div></div>
+    <div class="stat"><div class="stat-val">4</div><div class="stat-lbl">Categorías</div></div>
     <div class="stat"><div class="stat-val" id="horaVal">--</div><div class="stat-lbl">Hora</div></div>
     <div class="stat"><div class="stat-val">∞</div><div class="stat-lbl">Diversión</div></div>
   </div>
@@ -470,31 +492,19 @@ footer {
 
 <script>
 // ══════════════════════════════════════════════════════
-// CATÁLOGO — 12 juegos en 5 categorías
+// CATÁLOGO — 16 juegos en 4 categorías
 // ══════════════════════════════════════════════════════
 const SECTIONS = [
-  {
-    id:'breath', label:'Respiración', icon:'fa-wind',
-    iconCls:'si-breath', lineCls:'sl-breath', titleColor:'var(--c-breath)',
-    games:[
-      {
-        url:'INHALAEXAHALA.html', title:'Respiración Cósmica',
-        cat:'Bienestar', desc:'Técnicas guiadas: calma, 4-7-8 y box breathing. Con astronauta animado y guía de voz.',
-        color:'var(--c-breath)', badge:{t:'MEJORADO',c:'nuevo'},
-        anim:`<div class="card-visual anim-breath"><div class="breath-circle"></div></div>`
-      },
-      {
-        url:'APNEA.html', title:'Océano Profundo',
-        cat:'Apnea', desc:'Entrena la resistencia de tus pulmones buceando. Criaturas marinas y 4 modos de juego.',
-        color:'var(--c-breath)', badge:{t:'MEJORADO',c:'nuevo'},
-        anim:`<div class="card-visual anim-apnea"><div class="bubble-wrap"><div class="bubble b1"></div><div class="bubble b2"></div><div class="bubble b3"></div><div class="bubble b4"></div><div class="bubble b5"></div></div><div class="diver-icon">🤿</div></div>`
-      },
-    ]
-  },
   {
     id:'brain', label:'Ingenio', icon:'fa-brain',
     iconCls:'si-brain', lineCls:'sl-brain', titleColor:'var(--c-brain)',
     games:[
+      {
+        url:'sudoku.html', title:'Sudoku Neón',
+        cat:'Lógica', desc:'4×4, 6×6 y 9×9 en un solo juego. Tres dificultades, pistas y validación automática.',
+        color:'var(--c-sudoku)', badge:{t:'3 EN 1',c:'top'},
+        anim:`<div class="card-visual anim-sudoku"><div class="sg-mini" id="sg4"></div></div>`
+      },
       {
         url:'torres-hanoi.html', title:'Torres de Hanói',
         cat:'Lógica', desc:'Mueve todos los discos al tercer poste. 5 niveles y sistema de pistas automático.',
@@ -525,46 +535,22 @@ const SECTIONS = [
         color:'var(--c-brain)', badge:{t:'NUEVO',c:'nuevo'},
         anim:`<div class="card-visual anim-stroop"><div class="stroop-demo"><div class="sd-word" style="color:#ff1744">AZUL</div><div class="sd-word" style="color:#00f5ff">ROJO</div><div class="sd-word" style="color:#39ff14">MORADO</div></div></div>`
       },
-    ]
-  },
-  {
-    id:'sudoku', label:'Sudoku', icon:'fa-table-cells',
-    iconCls:'si-sudoku', lineCls:'sl-sudoku', titleColor:'var(--c-sudoku)',
-    games:[
       {
-        url:'sudoku.html', title:'Sudoku Neón',
-        cat:'Lógica', desc:'4×4, 6×6 y 9×9 en un solo juego. Tres dificultades, pistas y validación automática.',
-        color:'var(--c-sudoku)', badge:{t:'3 EN 1',c:'top'},
-        anim:`<div class="card-visual anim-sudoku"><div class="sg-mini" id="sg4"></div></div>`
-      },
-    ]
-  },
-  {
-    id:'words', label:'Palabras', icon:'fa-spell-check',
-    iconCls:'si-words', lineCls:'sl-words', titleColor:'var(--c-words)',
-    games:[
-      {
-        url:'wordle.html', title:'Wordle ES',
-        cat:'Vocabulario', desc:'Adivina la palabra de 5 letras en 6 intentos. +250 palabras en español.',
-        color:'var(--c-words)', badge:{t:'NUEVO',c:'nuevo'},
-        anim:`<div class="card-visual anim-wordle"><div class="wordle-demo"><div class="wd-row"><div class="wd-cell wc">G</div><div class="wd-cell wa">A</div><div class="wd-cell wp">T</div><div class="wd-cell wa">O</div><div class="wd-cell wa">S</div></div><div class="wd-row"><div class="wd-cell wa">P</div><div class="wd-cell wc">A</div><div class="wd-cell wa">L</div><div class="wd-cell wp">O</div><div class="wd-cell wa">S</div></div><div class="wd-row"><div class="wd-cell">M</div><div class="wd-cell">U</div><div class="wd-cell">N</div><div class="wd-cell">D</div><div class="wd-cell">O</div></div></div></div>`
+        url:'2048.html', title:'2048',
+        cat:'Lógica', desc:'Une tiles del mismo número para duplicarlos. Llega al 2048. Undo y modo 4×4 · 5×5.',
+        color:'var(--c-sudoku)', badge:{t:'NUEVO',c:'nuevo'},
+        anim:`<div class="card-visual anim-2048"><div class="tiles-mini">
+          <div class="tm t2">2</div><div class="tm t4">4</div><div class="tm e"></div><div class="tm t2">2</div>
+          <div class="tm e"></div><div class="tm t8">8</div><div class="tm t4">4</div><div class="tm e"></div>
+          <div class="tm t16">16</div><div class="tm e"></div><div class="tm t32">32</div><div class="tm t4">4</div>
+          <div class="tm e"></div><div class="tm t64">64</div><div class="tm t128">128</div><div class="tm t256">256</div>
+        </div></div>`
       },
       {
-        url:'ahorcado.html', title:'Ahorcado Temático',
-        cat:'Vocabulario', desc:'8 categorías temáticas con pistas visuales. Nivel niños y nivel avanzado.',
-        color:'var(--c-words)', badge:{t:'NUEVO',c:'nuevo'},
-        anim:`<div class="card-visual anim-ahorcado" style="background:linear-gradient(135deg,#0a0800,#050400)">
-          <svg viewBox="0 0 160 180" width="110" style="z-index:2;position:relative">
-            <line x1="20" y1="170" x2="140" y2="170" stroke="rgba(255,230,0,0.45)" stroke-width="3" stroke-linecap="round"/>
-            <line x1="50" y1="170" x2="50" y2="20"  stroke="rgba(255,230,0,0.45)" stroke-width="3" stroke-linecap="round"/>
-            <line x1="50" y1="20"  x2="100" y2="20"  stroke="rgba(255,230,0,0.45)" stroke-width="3" stroke-linecap="round"/>
-            <line x1="100" y1="20" x2="100" y2="42"  stroke="rgba(255,230,0,0.3)"  stroke-width="2" stroke-linecap="round"/>
-            <circle cx="100" cy="57" r="14" fill="none" stroke="rgba(255,0,144,0.75)" stroke-width="2.5"/>
-            <line x1="100" y1="71" x2="100" y2="110" stroke="rgba(255,0,144,0.75)" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="100" y1="83" x2="82"  y2="100" stroke="rgba(255,0,144,0.75)" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="100" y1="83" x2="118" y2="100" stroke="rgba(255,0,144,0.75)" stroke-width="2.5" stroke-linecap="round"/>
-          </svg>
-        </div>`
+        url:'nonograma.html', title:'Nonograma',
+        cat:'Picross', desc:'Pinta celdas siguiendo pistas numéricas. Lógica pura. 3 tamaños: 5×5, 10×10, 15×15.',
+        color:'var(--c-breath)', badge:{t:'NUEVO',c:'nuevo'},
+        anim:`<div class="card-visual anim-nono"><div class="nono-mini" id="nonomini"></div></div>`
       },
     ]
   },
@@ -622,6 +608,65 @@ const SECTIONS = [
           <div class="racer-trail" style="left:65%;top:78%;animation-delay:.8s"></div>
           <div class="racer-finish">🏁</div>
         </div>`
+      },
+      {
+        url:'tron-jump.html', title:'Tron Jump',
+        cat:'Plataformas', desc:'Salta de plataforma en plataforma hacia arriba. Inclina el móvil para moverte. Estilo Whirlybird.',
+        color:'var(--c-breath)', badge:{t:'NUEVO',c:'nuevo'},
+        anim:`<div class="card-visual anim-pong">
+          <div class="pong-grid"></div>
+          <div style="position:absolute;font-size:2rem;bottom:30%;left:44%;animation:ninjaRun .5s ease-in-out infinite alternate;filter:drop-shadow(0 0 10px rgba(0,245,255,.6));z-index:3">🏃</div>
+          <div style="position:absolute;width:60%;height:10px;border-radius:5px;background:#00f5ff;box-shadow:0 0 12px #00f5ff;bottom:25%;left:20%;"></div>
+          <div style="position:absolute;width:40%;height:10px;border-radius:5px;background:#00f5ff;box-shadow:0 0 12px #00f5ff;bottom:45%;left:45%;"></div>
+          <div style="position:absolute;width:50%;height:10px;border-radius:5px;background:#00f5ff;box-shadow:0 0 12px #00f5ff;bottom:65%;left:10%;"></div>
+        </div>`
+      },
+    ]
+  },
+  {
+    id:'words', label:'Palabras', icon:'fa-spell-check',
+    iconCls:'si-words', lineCls:'sl-words', titleColor:'var(--c-words)',
+    games:[
+      {
+        url:'wordle.html', title:'Wordle ES',
+        cat:'Vocabulario', desc:'Adivina la palabra de 5 letras en 6 intentos. +250 palabras en español.',
+        color:'var(--c-words)', badge:{t:'NUEVO',c:'nuevo'},
+        anim:`<div class="card-visual anim-wordle"><div class="wordle-demo"><div class="wd-row"><div class="wd-cell wc">G</div><div class="wd-cell wa">A</div><div class="wd-cell wp">T</div><div class="wd-cell wa">O</div><div class="wd-cell wa">S</div></div><div class="wd-row"><div class="wd-cell wa">P</div><div class="wd-cell wc">A</div><div class="wd-cell wa">L</div><div class="wd-cell wp">O</div><div class="wd-cell wa">S</div></div><div class="wd-row"><div class="wd-cell">M</div><div class="wd-cell">U</div><div class="wd-cell">N</div><div class="wd-cell">D</div><div class="wd-cell">O</div></div></div></div>`
+      },
+      {
+        url:'ahorcado.html', title:'Ahorcado Temático',
+        cat:'Vocabulario', desc:'8 categorías temáticas con pistas visuales. Nivel niños y nivel avanzado.',
+        color:'var(--c-words)', badge:{t:'NUEVO',c:'nuevo'},
+        anim:`<div class="card-visual anim-ahorcado" style="background:linear-gradient(135deg,#0a0800,#050400)">
+          <svg viewBox="0 0 160 180" width="110" style="z-index:2;position:relative">
+            <line x1="20" y1="170" x2="140" y2="170" stroke="rgba(255,230,0,0.45)" stroke-width="3" stroke-linecap="round"/>
+            <line x1="50" y1="170" x2="50" y2="20"  stroke="rgba(255,230,0,0.45)" stroke-width="3" stroke-linecap="round"/>
+            <line x1="50" y1="20"  x2="100" y2="20"  stroke="rgba(255,230,0,0.45)" stroke-width="3" stroke-linecap="round"/>
+            <line x1="100" y1="20" x2="100" y2="42"  stroke="rgba(255,230,0,0.3)"  stroke-width="2" stroke-linecap="round"/>
+            <circle cx="100" cy="57" r="14" fill="none" stroke="rgba(255,0,144,0.75)" stroke-width="2.5"/>
+            <line x1="100" y1="71" x2="100" y2="110" stroke="rgba(255,0,144,0.75)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="100" y1="83" x2="82"  y2="100" stroke="rgba(255,0,144,0.75)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="100" y1="83" x2="118" y2="100" stroke="rgba(255,0,144,0.75)" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>`
+      },
+    ]
+  },
+  {
+    id:'breath', label:'Respiración', icon:'fa-wind',
+    iconCls:'si-breath', lineCls:'sl-breath', titleColor:'var(--c-breath)',
+    games:[
+      {
+        url:'INHALAEXAHALA.html', title:'Respiración Cósmica',
+        cat:'Bienestar', desc:'Técnicas guiadas: calma, 4-7-8 y box breathing. Con astronauta animado y guía de voz.',
+        color:'var(--c-breath)', badge:{t:'MEJORADO',c:'nuevo'},
+        anim:`<div class="card-visual anim-breath"><div class="breath-circle"></div></div>`
+      },
+      {
+        url:'APNEA.html', title:'Océano Profundo',
+        cat:'Apnea', desc:'Entrena la resistencia de tus pulmones buceando. Criaturas marinas y 4 modos de juego.',
+        color:'var(--c-breath)', badge:{t:'MEJORADO',c:'nuevo'},
+        anim:`<div class="card-visual anim-apnea"><div class="bubble-wrap"><div class="bubble b1"></div><div class="bubble b2"></div><div class="bubble b3"></div><div class="bubble b4"></div><div class="bubble b5"></div></div><div class="diver-icon">🤿</div></div>`
       },
     ]
   },
@@ -745,6 +790,24 @@ function buildAnimations() {
       pg.querySelectorAll('.pc')[slidable[si%slidable.length]].classList.add('pulse');
       si++;
     }, 900);
+  }
+
+  // Nonograma — heart pattern animated cell by cell
+  const nm = document.getElementById('nonomini');
+  if (nm) {
+    const heart = [0,1,1,1,0, 1,1,0,1,1, 1,0,0,0,1, 0,1,0,1,0, 0,0,1,0,0];
+    heart.forEach(v => {
+      const c = document.createElement('div');
+      c.className = 'nc' + (v ? ' on' : '');
+      nm.appendChild(c);
+    });
+    let ni = 0;
+    setInterval(() => {
+      const cells = nm.querySelectorAll('.nc');
+      cells.forEach((c,i) => c.classList.toggle('on', heart[i]===1 && i<=ni));
+      ni = (ni + 1) % (heart.length + 6);
+      if (ni === 0) cells.forEach(c => c.classList.remove('on'));
+    }, 180);
   }
 }
 
