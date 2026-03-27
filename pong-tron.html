@@ -419,7 +419,7 @@ let score1 = 0, score2 = 0;
 // ══════════════════════════════════════════════════════
 // GAME STATE
 // ══════════════════════════════════════════════════════
-let p1, p2, ball, running, paused, raf, lastT = 0;
+let p1, p2, ball, running, paused, scoring, raf, lastT = 0;
 let parts = [], gridOff = 0, screenFlash = 0, flashCol = '#fff';
 let powerUp = null, puTimer = 0;
 let aiTarget = 0, aiLastUpdate = 0, aiError = 0;
@@ -536,7 +536,7 @@ function startMatch() {
   document.getElementById('aiInd').classList.toggle('show', gameMode==='ai');
 
   p1=mkPad(1); p2=mkPad(2); ball=mkBall(0);
-  parts=[]; powerUp=null; puTimer=0; paused=false; running=true;
+  parts=[]; powerUp=null; puTimer=0; paused=false; scoring=false; running=true;
   aiTarget=H/2; aiError=0;
 
   countdown(3, ()=>{ lastT=performance.now(); cancelAnimationFrame(raf); raf=requestAnimationFrame(loop); });
@@ -546,7 +546,7 @@ function newRound(side) {
   p1=mkPad(1); p2=mkPad(2); ball=mkBall(side===1?-1:1);
   powerUp=null; puTimer=0;
   p1.effect=p2.effect=null; p1.h=p2.h=H*.18;
-  aiTarget=H/2; aiError=0;
+  aiTarget=H/2; aiError=0; scoring=false;
   countdown(2, ()=>{});
 }
 
@@ -662,11 +662,14 @@ function update(dt, ts) {
   }
 
   // ── Score ──
-  if(ball.x<-ball.r*2){ score2++; scorePoint(2); }
-  if(ball.x>W+ball.r*2){ score1++; scorePoint(1); }
+  if(!scoring){
+    if(ball.x<-ball.r*2){ score2++; scoring=true; scorePoint(2); }
+    else if(ball.x>W+ball.r*2){ score1++; scoring=true; scorePoint(1); }
+  }
 
   // ── Particles ──
   parts=parts.filter(p=>p.life>0);
+  if(parts.length>300) parts.splice(0, parts.length-300); // hard cap
   parts.forEach(p=>{ p.x+=p.vx*dt*60; p.y+=p.vy*dt*60; p.vy+=.09; p.life-=p.dec; });
   if(screenFlash>0) screenFlash--;
 }
@@ -828,17 +831,29 @@ function drawPU(ts){
 }
 
 function drawParts(){
-  parts.forEach(p=>{
+  if(!parts.length) return;
+  // Draw circles in one batch (no per-particle shadowBlur — too expensive)
+  const circs = parts.filter(p=>p.sh!=='line');
+  const lines  = parts.filter(p=>p.sh==='line');
+
+  // Circles: group by color to minimize fillStyle changes
+  circs.sort((a,b)=>a.col<b.col?-1:1);
+  let lastCol='';
+  circs.forEach(p=>{
+    const sz=Math.max(0,p.sz); if(!sz) return;
     ctx.globalAlpha=Math.max(0,p.life);
-    ctx.fillStyle=p.col; ctx.shadowBlur=8; ctx.shadowColor=p.col;
-    if(p.sh==='line'){
-      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.ang||0);
-      ctx.fillRect(-p.len/2,-1,p.len,2); ctx.restore();
-    } else {
-      ctx.beginPath(); ctx.arc(p.x,p.y,Math.max(0,p.sz),0,Math.PI*2); ctx.fill();
-    }
-    ctx.shadowBlur=0;
+    if(p.col!==lastCol){ ctx.fillStyle=lastCol=p.col; }
+    ctx.beginPath(); ctx.arc(p.x,p.y,sz,0,Math.PI*2); ctx.fill();
   });
+
+  // Lines
+  lines.forEach(p=>{
+    ctx.globalAlpha=Math.max(0,p.life);
+    ctx.fillStyle=p.col;
+    ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.ang||0);
+    ctx.fillRect(-p.len/2,-1,p.len,2); ctx.restore();
+  });
+
   ctx.globalAlpha=1;
 }
 
@@ -854,8 +869,8 @@ function spawnPadSparks(p,b){
 }
 function spawnGoalFx(side){
   const x=side===1?W*.85:W*.15, col=side===1?P1C:P2C;
-  for(let i=0;i<40;i++){const a=(i/40)*Math.PI*2,sp=2+Math.random()*5;parts.push({x,y:H/2,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2,life:1,dec:.02+Math.random()*.025,sz:2+Math.random()*5,col,sh:'circ'});}
-  for(let i=0;i<14;i++){const a=(i/14)*Math.PI*2;parts.push({x,y:H/2,vx:Math.cos(a)*(4+Math.random()*3),vy:Math.sin(a)*(4+Math.random()*3),life:1,dec:.016,sz:0,col,sh:'line',len:12+Math.random()*16,ang:a});}
+  for(let i=0;i<25;i++){const a=(i/25)*Math.PI*2,sp=2+Math.random()*5;parts.push({x,y:H/2,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2,life:1,dec:.035+Math.random()*.03,sz:2+Math.random()*4,col,sh:'circ'});}
+  for(let i=0;i<5;i++){const a=(i/5)*Math.PI*2;parts.push({x,y:H/2,vx:Math.cos(a)*(4+Math.random()*3),vy:Math.sin(a)*(4+Math.random()*3),life:1,dec:.025,sz:0,col,sh:'line',len:10+Math.random()*14,ang:a});}
 }
 function spawnStars(x,y,col,n){for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2;parts.push({x,y,vx:Math.cos(a)*(2+Math.random()*3),vy:Math.sin(a)*(2+Math.random()*3)-1,life:1,dec:.025,sz:2+Math.random()*4,col,sh:'circ'});}}
 
@@ -868,8 +883,8 @@ function scorePoint(side) {
   spawnGoalFx(side);
   screenFlash=22; flashCol=side===1?P1C:P2C;
   const winner = score1>=goalScore?1 : score2>=goalScore?2 : 0;
-  if(winner) setTimeout(()=>endMatch(winner),900);
-  else       setTimeout(()=>newRound(side), 800);
+  if(winner) setTimeout(()=>endMatch(winner),700);
+  else       setTimeout(()=>newRound(side), 600);
 }
 
 function endMatch(winner) {
@@ -895,7 +910,7 @@ function endMatch(winner) {
   rb.style.cssText=`color:${col};border-color:${col};box-shadow:0 0 20px ${col}44;`;
 
   show('scWin');
-  for(let i=0;i<28;i++) setTimeout(()=>{ spawnGoalFx(winner); if(!running){ctx.clearRect(0,0,W,H);drawGrid();drawParts();} },i*100);
+  for(let i=0;i<3;i++) setTimeout(()=>{ spawnGoalFx(winner); if(!running){ctx.clearRect(0,0,W,H);drawGrid();drawParts();} },i*220);
 }
 
 // ══════════════════════════════════════════════════════
