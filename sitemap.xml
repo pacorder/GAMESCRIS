@@ -4,24 +4,48 @@
     <loc>index.html</loc>
   </url>
   <url>
-    <loc>APNEA.html</loc>
+    <loc>2048.html</loc>
   </url>
   <url>
-    <loc>CAZABURBUJAS.html</loc>
+    <loc>APNEA.html</loc>
   </url>
   <url>
     <loc>INHALAEXAHALA.html</loc>
   </url>
   <url>
-    <loc>globo.html</loc>
+    <loc>ahorcado.html</loc>
   </url>
   <url>
-    <loc>minisudoku4x4.html</loc>
+    <loc>luces-apagadas.html</loc>
   </url>
   <url>
-    <loc>minisudoku6x6.html</loc>
+    <loc>neon-racer.html</loc>
   </url>
   <url>
-    <loc>respira.html</loc>
+    <loc>nonograma.html</loc>
+  </url>
+  <url>
+    <loc>pong-tron.html</loc>
+  </url>
+  <url>
+    <loc>puzzle-15.html</loc>
+  </url>
+  <url>
+    <loc>simon.html</loc>
+  </url>
+  <url>
+    <loc>sudoku.html</loc>
+  </url>
+  <url>
+    <loc>torres-hanoi.html</loc>
+  </url>
+  <url>
+    <loc>torn-jump.html</loc>
+  </url>
+  <url>
+    <loc>wordle.html</loc>
+  </url>
+  <url>
+    <loc>cube-dash.html</loc>
   </url>
 </urlset>
